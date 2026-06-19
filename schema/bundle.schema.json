@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://decant.link/schema/bundle.schema.json",
+  "title": "Decant Rule Bundle",
+  "description": "The signed delivery artifact. CI-compiled from rules/*.json. See SCHEMA.md §5.",
+  "type": "object",
+  "required": ["schemaVersion", "generation", "generatedAt", "rules"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "generation": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Monotonic publish counter. Client refuses generation <= cached (anti-rollback)."
+    },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "rules": {
+      "type": "array",
+      "items": { "$ref": "rule.schema.json" }
+    }
+  }
+}

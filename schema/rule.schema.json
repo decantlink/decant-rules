@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://decant.link/schema/rule.schema.json",
+  "title": "Decant Rule",
+  "description": "A single Decant cleaning rule. See SCHEMA.md for normative semantics.",
+  "type": "object",
+  "required": ["id", "name", "matcher", "actions", "source"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Stable namespaced id, e.g. 'shopping.amazon'. Merge key; not a UUID.",
+      "pattern": "^[a-z0-9]+(\\.[a-z0-9-]+)+$"
+    },
+    "name": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "matcher": { "$ref": "#/$defs/matcher" },
+    "actions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/action" }
+    },
+    "priority": { "type": "integer", "default": 100 },
+    "enabled": { "type": "boolean", "default": true },
+    "source": { "enum": ["builtIn", "user", "community", "ai"] },
+    "category": {
+      "enum": ["tracking", "affiliate", "session", "analytics", "social",
+               "shopping", "advertising", "urlRewriting", "appRouting", "custom"]
+    },
+    "version": { "type": "integer", "minimum": 1, "default": 1 }
+  },
+  "$defs": {
+    "matcher": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["type"],
+          "additionalProperties": false,
+          "properties": { "type": { "const": "any" } }
+        },
+        {
+          "type": "object",
+          "required": ["type"],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "host" },
+            "exact":  { "type": "array", "items": { "$ref": "#/$defs/hostLiteral" }, "minItems": 1 },
+            "suffix": { "type": "array", "items": { "$ref": "#/$defs/hostLiteral" }, "minItems": 1 }
+          },
+          "anyOf": [ { "required": ["exact"] }, { "required": ["suffix"] } ]
+        },
+        {
+          "type": "object",
+          "required": ["type", "pattern"],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "hostRegex" },
+            "pattern": {
+              "type": "string",
+              "description": "Must be anchored ^...$ (enforced by RuleValidator, not by this schema).",
+              "pattern": "^\\^.*\\$$"
+            }
+          }
+        }
+      ]
+    },
+    "hostLiteral": {
+      "type": "string",
+      "description": "A registrable host label like 'amazon.com'. Lowercase, no scheme/path.",
+      "pattern": "^[a-z0-9.-]+$"
+    },
+    "action": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["type", "select"],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "removeParameters" },
+            "select": { "$ref": "#/$defs/selector" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["type"],
+          "additionalProperties": false,
+          "properties": { "type": { "const": "removeAllParameters" } }
+        }
+      ]
+    },
+    "selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "maxProperties": 1,
+      "properties": {
+        "names":    { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1 },
+        "prefix":   { "type": "string", "minLength": 1 },
+        "regex":    { "type": "string", "minLength": 1 },
+        "keepOnly": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1 }
+      }
+    }
+  }
+}

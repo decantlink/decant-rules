@@ -1,0 +1,31 @@
+[
+  {
+    "id": "tracking.utm",
+    "name": "UTM campaign parameters",
+    "description": "Google Analytics / Urchin campaign tags. Tracking-only, safe to strip everywhere.",
+    "matcher": { "type": "any" },
+    "actions": [ { "type": "removeParameters", "select": { "prefix": "utm_" } } ],
+    "source": "builtIn",
+    "category": "tracking"
+  },
+  {
+    "id": "tracking.click-ids",
+    "name": "Ad-network click identifiers",
+    "description": "Per-click attribution ids appended by ad networks. No effect on content; tracking-only.",
+    "matcher": { "type": "any" },
+    "actions": [
+      {
+        "type": "removeParameters",
+        "select": {
+          "names": [
+            "fbclid", "gclid", "gclsrc", "dclid", "wbraid", "gbraid",
+            "msclkid", "yclid", "twclid", "ttclid", "rdt_cid",
+            "mc_eid", "mc_cid", "mkt_tok", "_hsenc", "_hsmi", "vero_id", "oly_enc_id", "oly_anon_id"
+          ]
+        }
+      }
+    ],
+    "source": "builtIn",
+    "category": "tracking"
+  }
+]
