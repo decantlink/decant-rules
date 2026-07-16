@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate delivery bundle against schema
+        run: >
+          npx --yes ajv-cli@5 validate --spec=draft2020
+          -s schema/bundle.schema.json
+          -r schema/rule.schema.json
+          -d dist/rules.bundle.json
+
+      - name: Authoring files stay consistent with dist bundle
+        run: |
+          jq -s 'add' rules/global.json rules/social.json rules/shopping.json | jq -S . > /tmp/authored.json
+          jq -S '.rules' dist/rules.bundle.json > /tmp/dist.json
+          diff -u /tmp/authored.json /tmp/dist.json
+
+  # TODO(release): bundle build + Ed25519 signing with a managed key replaces the
+  # committed dev-key flow — gate on the key swap (release gate, board §0 S3).
