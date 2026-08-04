@@ -30,6 +30,6 @@ fixtures/url-fidelity.json  acceptance corpus engines must pass (surgical-splice
 - Rule data format → **canonical here**: `SCHEMA.md` + `schema/*.json` (versioned by `schemaVersion` + monotonic `generation`). Consumed by `decant-core`.
 
 ## Pointers
-- Current state: `~/.agents/memories/Decant/SUMMARY.md` · Decisions: vault Bible §12 · Cross-repo map: `decant-meta/AGENTS.md`.
+- Consumed by `decant-core` (loads the signed bundle).
 
 <!-- Update on: schema change, new rule category, changed bundle/signature scheme, new fixture format. -->
