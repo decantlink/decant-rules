@@ -13,7 +13,8 @@ jobs:
 
       - name: Validate delivery bundle against schema
         run: >
-          npx --yes ajv-cli@5 validate --spec=draft2020
+          npx --yes -p ajv-cli@5 -p ajv-formats@3 ajv validate --spec=draft2020
+          -c ajv-formats
           -s schema/bundle.schema.json
           -r schema/rule.schema.json
           -d dist/rules.bundle.json
