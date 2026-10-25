@@ -38,6 +38,7 @@ The runtime never re-serializes; it verifies bytes, then parses.
   | Unknown **action** `type` | **skip the whole rule** (a half-applied rule is a broken URL) |
   | Unknown **matcher** `type` | **skip the whole rule** |
   | Unknown **optional field** on a known type | ignore the field, keep the rule |
+  | Unknown key inside `hostPath`'s `path`, or `path` without `prefix` | **skip the whole rule** (§3; an ignored scoping field would widen the rule) |
   | `schemaVersion` > engine max | load rules it understands, **skip-and-log** the rest; never fail the whole bundle |
 
   Rationale: an old client meeting a v2 routing rule must keep cleaning with the rules it does
@@ -58,6 +59,8 @@ scoping is author-declared, matched by literal label boundaries.
 { "type": "host", "suffix": ["amazon.com", ...] }   // label-boundary suffix match
 { "type": "host", "exact":  ["x.com", ...] }        // exact host match
 { "type": "hostRegex", "pattern": "^(.*\\.)?amazon\\.[a-z.]+$" }  // escape hatch
+{ "type": "hostPath", "exact": ["instagram.com"],
+  "path": { "prefix": ["/reel", "/p"] } }           // host match + path-segment prefix
 ```
 
 - **`suffix`** matches host `H` against declared domain `D` iff `H == D` **or** `H` ends with
@@ -75,9 +78,31 @@ scoping is author-declared, matched by literal label boundaries.
   enumerating: `gclid`/`utm_*` strip on `{ "type": "any" }`. Only brand-specific params
   (Amazon `tag`/`ref`) are host-scoped, and those brands have manageable TLD counts.
 
-> Reserved (not in v1): `path` / `pathPattern` matching, `compound` (allOf/anyOf/noneOf).
-> These arrive with rewrite/routing. The runtime indexes by host today; a per-host path
-> dimension is added then — additive, no repaint.
+### `hostPath` — host plus path prefix
+
+```jsonc
+{ "type": "hostPath",
+  "exact":  ["instagram.com", "www.instagram.com"],   // same semantics as `host`; exact and/or suffix
+  "path":   { "prefix": ["/reel", "/reels", "/p", "/tv"] } }
+```
+
+- **Composition:** the rule matches iff the host matches (identical to `host`) **and** the path
+  matches any listed prefix.
+- **Path definition:** the RFC 3986 path component of the input URL, exactly as written
+  (percent-encoded, no decoding). No query, no fragment. An empty path is `/`. No dot-segment
+  normalization. Matching is case-sensitive.
+- **Segment-boundary prefix:** `P` matches path `X` iff `X == P`, or `X` starts with `P + "/"`.
+  If `P` itself ends with `/`, `X` starting with `P` is enough. So `/reel` matches `/reel`,
+  `/reel/` and `/reel/ABC/`, but not `/reels/ABC/`. This mirrors the host `suffix` label anchor
+  (`notamazon.com` ≠ `amazon.com`).
+- **Validation:** at least one prefix, each starting with `/`, no `?` or `#`. Host rules are the
+  same as for `host`.
+- **`path` is an object, not a bare list.** Its only v1 key is `prefix`. A missing `prefix` or an
+  unknown key inside `path` makes the rule undecodable, so engines skip the whole rule (§2) rather
+  than widen it to every path.
+
+> Reserved (not in v1): `pathPattern` matching, `compound` (allOf/anyOf/noneOf).
+> These arrive with rewrite/routing.
 
 ---
 

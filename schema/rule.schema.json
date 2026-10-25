@@ -61,8 +61,32 @@
               "pattern": "^\\^.*\\$$"
             }
           }
+        },
+        {
+          "type": "object",
+          "required": ["type", "path"],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "hostPath" },
+            "exact":  { "type": "array", "items": { "$ref": "#/$defs/hostLiteral" }, "minItems": 1 },
+            "suffix": { "type": "array", "items": { "$ref": "#/$defs/hostLiteral" }, "minItems": 1 },
+            "path": {
+              "type": "object",
+              "required": ["prefix"],
+              "additionalProperties": false,
+              "properties": {
+                "prefix": { "type": "array", "items": { "$ref": "#/$defs/pathPrefix" }, "minItems": 1 }
+              }
+            }
+          },
+          "anyOf": [ { "required": ["exact"] }, { "required": ["suffix"] } ]
         }
       ]
+    },
+    "pathPrefix": {
+      "type": "string",
+      "description": "Raw RFC 3986 path prefix, segment-boundary matched. See SCHEMA.md §3.",
+      "pattern": "^/[^?#]*$"
     },
     "hostLiteral": {
       "type": "string",
