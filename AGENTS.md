@@ -1,7 +1,8 @@
 # decant-rules — Decant rule database (public)
 
-The rule data + its normative contract. Authoring sources are human-reviewed; CI compiles
-them into one signed bundle that `decant-core` loads. Data repo — no Swift.
+The rule data + its normative contract. Authoring sources are human-reviewed and compiled
+into one signed bundle that `decant-core` loads. Data repo — no Swift package; the only Swift
+is the dev signing script in `tools/`.
 
 ## Structure
 
@@ -10,14 +11,14 @@ SCHEMA.md                   the normative contract — read first
 schema/rule.schema.json     JSON Schema for one rule
 schema/bundle.schema.json   JSON Schema for the delivery bundle
 rules/*.json                authoring source, per category (human-reviewed)
-dist/rules.bundle.json      compiled, signed delivery bundle (CI-generated; example committed)
+dist/rules.bundle.json      compiled delivery bundle + .sig (built and signed locally, committed)
 fixtures/url-fidelity.json  acceptance corpus engines must pass (surgical-splice fidelity)
 ```
 
 ## Commands
 
 - Add/edit a rule: edit `rules/<category>.json` per `SCHEMA.md`; validate against `schema/rule.schema.json`.
-- The signed `dist/rules.bundle.json` is **CI-built** (concatenate authoring files → stamp `generation` → Ed25519-sign exact bytes). Don't hand-edit `dist/`.
+- The signed bundle is built and signed locally (`swift tools/sign-bundle.swift`; dist + .sig committed); CI verifies the schema, authored-vs-dist consistency, and the signature against keys/dev_public.key. CI signing with a managed key replaces this at the release gate.
 
 ## Conventions
 

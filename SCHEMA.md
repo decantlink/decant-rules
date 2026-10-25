@@ -16,10 +16,10 @@ The same logical rule exists in three forms. Keep them distinct:
 | Layer | Form | Lives in | Optimized for |
 |---|---|---|---|
 | **Authoring** | many small JSON files, per category | `rules/*.json` | human review — clean git diffs, blame, PRs |
-| **Delivery** | one signed bundle | `dist/rules.bundle.json` (+ `.sig`) | integrity + one fetch; CI-compiled from authoring files |
+| **Delivery** | one signed bundle | `dist/rules.bundle.json` (+ `.sig`) | integrity + one fetch; compiled from authoring files |
 | **Runtime** | in-memory compiled indices | `decant-core` only | O(params) matching; never serialized |
 
-CI concatenates the authoring files, stamps the envelope (§5), and signs the **exact bytes**.
+The build concatenates the authoring files, stamps the envelope (§5), and signs the **exact bytes**.
 The runtime never re-serializes; it verifies bytes, then parses.
 
 ---
@@ -153,7 +153,9 @@ Delivery bundle (`dist/rules.bundle.json`):
 ### 5.1 Signing — sign the exact bytes
 - A **detached Ed25519 signature** over the **exact served bytes** of the bundle file,
   published alongside as `rules.bundle.json.sig`.
-- The public key is **pinned in the app binary**. The private key is a CI secret (ideally
+- The public key is **pinned in the app binary**. The private key is never committed.
+  Pre-release bundles are signed locally with a development key (public half:
+  `keys/dev_public.key`); release bundles are signed in CI with a managed key (ideally
   offline/hardware-backed).
 - Verification order: **fetch bytes → verify signature over those bytes → only then parse.**
   Never canonicalize or re-serialize before verifying (JSON is not byte-stable; re-serialization

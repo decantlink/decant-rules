@@ -13,7 +13,7 @@ SCHEMA.md                  the normative contract — read this first
 schema/rule.schema.json    JSON Schema for one rule
 schema/bundle.schema.json  JSON Schema for the delivery bundle
 rules/*.json               authoring source — per-category, human-reviewed
-dist/rules.bundle.json     compiled delivery bundle (CI-generated; example committed here)
+dist/rules.bundle.json     compiled delivery bundle + .sig (built and signed locally, committed)
 fixtures/url-fidelity.json acceptance corpus for engines (surgical-splice fidelity)
 ```
 
@@ -28,6 +28,8 @@ fixtures/url-fidelity.json acceptance corpus for engines (surgical-splice fideli
 
 ## Delivery & integrity
 
-CI compiles `rules/*.json` into `dist/rules.bundle.json`, stamps a monotonic `generation`,
-and signs the exact bytes (Ed25519, detached `.sig`). Clients verify the signature over the
-served bytes before parsing, and refuse a bundle older than the one cached. See SCHEMA.md §5.
+`rules/*.json` are compiled into `dist/rules.bundle.json` with a monotonic `generation`, and
+the exact bytes are signed (Ed25519, detached `.sig`). For now this happens locally with a
+development key, and CI verifies the signature; CI signing with a managed key replaces it
+before release. Clients verify the signature over the served bytes before parsing, and refuse
+a bundle older than the one cached. See SCHEMA.md §5.
