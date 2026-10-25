@@ -1,3 +1,4 @@
 .DS_Store
 *.sig
+!dist/rules.bundle.json.sig
 keys/dev_private.key
