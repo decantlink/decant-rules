@@ -33,4 +33,4 @@ jobs:
             -in dist/rules.bundle.json -sigfile dist/rules.bundle.json.sig
 
   # TODO(release): CI signing with a managed key replaces the locally signed, committed
-  # dev-key signature — gate on the key swap (release gate, board §0 S3).
+  # dev-key signature at the release gate.
