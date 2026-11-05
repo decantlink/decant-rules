@@ -10,6 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generation is exactly base + 1 when dist changes
+        env:
+          BASE_REF: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || 'HEAD^1' }}
+        run: tools/check-generation.sh "$BASE_REF"
 
       - name: Validate delivery bundle against schema
         run: >
@@ -31,6 +38,33 @@ jobs:
           { printf '\x30\x2a\x30\x05\x06\x03\x2b\x65\x70\x03\x21\x00'; cat keys/dev_public.key; } > /tmp/public.der
           openssl pkeyutl -verify -pubin -keyform DER -inkey /tmp/public.der -rawin \
             -in dist/rules.bundle.json -sigfile dist/rules.bundle.json.sig
+
+  # Runs only the fixture suites: other core suites assert bundle-shape details that a legitimate
+  # rule change can break.
+  fixtures:
+    runs-on: macos-latest
+    env:
+      # Tracks the decant-core version the Decant app currently resolves; bump it when the app does.
+      CORE_REF: 0.2.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: rules
+
+      - uses: actions/checkout@v4
+        with:
+          repository: decantlink/decant-core
+          ref: ${{ env.CORE_REF }}
+          path: core
+
+      - name: Use this change's bundle and fixtures
+        run: >
+          cp rules/dist/rules.bundle.json rules/fixtures/semantic-safety.json rules/fixtures/url-fidelity.json
+          core/Tests/DecantCoreTests/Resources/
+
+      - name: Fixtures pass against the real engine
+        working-directory: core
+        run: swift test --filter 'SemanticSafetyTests|URLFidelityTests'
 
   # TODO(release): CI signing with a managed key replaces the locally signed, committed
   # dev-key signature at the release gate.
