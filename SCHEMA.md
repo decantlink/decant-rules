@@ -154,9 +154,9 @@ Delivery bundle (`dist/rules.bundle.json`):
 - A **detached Ed25519 signature** over the **exact served bytes** of the bundle file,
   published alongside as `rules.bundle.json.sig`.
 - The public key is **pinned in the app binary**. The private key is never committed.
-  Pre-release bundles are signed locally with a development key (public half:
-  `keys/dev_public.key`); release bundles are signed in CI with a managed key (ideally
-  offline/hardware-backed).
+  Bundles are **signed locally by the maintainer with a managed key held in a password
+  manager; CI only verifies** and never holds the key. Bundles before generation 2 were
+  signed with a development key (public half: `keys/dev_public.key`).
 - Verification order: **fetch bytes → verify signature over those bytes → only then parse.**
   Never canonicalize or re-serialize before verifying (JSON is not byte-stable; re-serialization
   is an attack surface).
@@ -164,7 +164,10 @@ Delivery bundle (`dist/rules.bundle.json`):
   signed bundle and goes through the same verify-then-parse path. No "trusted because local."
 
 ### 5.2 Anti-rollback
-- `generation` is a monotonic integer, incremented every publish.
+- `generation` is a monotonic integer, incremented by **exactly 1** on every change to
+  `dist/rules.bundle.json`; CI enforces this against `main`. No skipped numbers, no dates.
+- **Fixes roll forward, never back.** A bad publish is corrected by a new bundle at +1;
+  `generation` is never lowered.
 - The client **refuses a bundle whose `generation` ≤ the cached one**, even if validly signed —
   prevents a CDN/MITM replaying an older signed bundle to re-expose a removed bad rule.
 
