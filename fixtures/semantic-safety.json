@@ -211,6 +211,64 @@
       "expected": "https://x.com/someuser/status/1000000000000000001?lang=en",
       "removed": ["a"],
       "modified": true
+    },
+    {
+      "name": "nytimes-article-smid-removed",
+      "input": "https://www.nytimes.com/2026/01/01/technology/synthetic-article.html?smid=nytcore-ios-share",
+      "expected": "https://www.nytimes.com/2026/01/01/technology/synthetic-article.html",
+      "removed": ["smid"],
+      "modified": true
+    },
+    {
+      "name": "nytimes-gift-link-unlock-code-kept",
+      "input": "https://www.nytimes.com/2026/01/01/world/synthetic-article.html?unlocked_article_code=1.Synthetic_Code&smid=url-share",
+      "expected": "https://www.nytimes.com/2026/01/01/world/synthetic-article.html?unlocked_article_code=1.Synthetic_Code",
+      "removed": ["smid"],
+      "modified": true,
+      "note": "unlocked_article_code is what makes a gift link open without a subscription; only the share source goes."
+    },
+    {
+      "name": "nytimes-search-query-kept",
+      "input": "https://www.nytimes.com/search?query=synthetic&smid=tw-share",
+      "expected": "https://www.nytimes.com/search?query=synthetic",
+      "removed": ["smid"],
+      "modified": true
+    },
+    {
+      "name": "nytimes-subdomain-smid-removed",
+      "input": "https://cooking.nytimes.com/recipes/1000001-synthetic-recipe?smid=url-share",
+      "expected": "https://cooking.nytimes.com/recipes/1000001-synthetic-recipe",
+      "removed": ["smid"],
+      "modified": true
+    },
+    {
+      "name": "nytimes-app-share-params-removed",
+      "input": "https://www.nytimes.com/2026/01/01/technology/synthetic-article.html?smid=nytcore-ios-share&referringSource=articleShare&sgrp=c-cb",
+      "expected": "https://www.nytimes.com/2026/01/01/technology/synthetic-article.html",
+      "removed": ["smid", "referringSource", "sgrp"],
+      "modified": true
+    },
+    {
+      "name": "nytimes-impression-id-removed",
+      "input": "https://www.nytimes.com/section/technology?impression_id=00000000-0000-4000-8000-000000000000",
+      "expected": "https://www.nytimes.com/section/technology",
+      "removed": ["impression_id"],
+      "modified": true
+    },
+    {
+      "name": "amazon-seller-smid-kept",
+      "input": "https://www.amazon.com/dp/B08N5WRWNW?smid=A1SYNTHETIC0001&tag=aff-20",
+      "expected": "https://www.amazon.com/dp/B08N5WRWNW?smid=A1SYNTHETIC0001",
+      "removed": ["tag"],
+      "modified": true,
+      "note": "On Amazon smid selects the seller whose offer is shown; stripping it can show the recipient a different seller (AdguardFilters #148958)."
+    },
+    {
+      "name": "smid-on-other-hosts-untouched",
+      "input": "https://www.example.org/page?smid=keep-me",
+      "expected": "https://www.example.org/page?smid=keep-me",
+      "removed": [],
+      "modified": false
     }
   ]
 }

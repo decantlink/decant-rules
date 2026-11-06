@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generation": 2,
-  "generatedAt": "2026-11-06T19:08:09Z",
+  "generation": 3,
+  "generatedAt": "2026-11-06T20:48:02Z",
   "rules": [
     {
       "id": "tracking.utm",
@@ -236,9 +236,35 @@
       "category": "social"
     },
     {
+      "id": "social.nytimes",
+      "name": "New York Times share tracking",
+      "description": "Share-attribution params on links shared from NYT (e.g. ?smid=nytcore-ios-share&referringSource=articleShare&sgrp=c-cb). All four are stripped on nytimes.com by AdGuard's URL Tracking filter (AdguardFilters #180304); ClearURLs strips smid. Gift links keep unlocked_article_code, which unlocks the article.",
+      "matcher": {
+        "type": "host",
+        "suffix": [
+          "nytimes.com"
+        ]
+      },
+      "actions": [
+        {
+          "type": "removeParameters",
+          "select": {
+            "names": [
+              "smid",
+              "referringSource",
+              "sgrp",
+              "impression_id"
+            ]
+          }
+        }
+      ],
+      "source": "builtIn",
+      "category": "social"
+    },
+    {
       "id": "shopping.amazon",
       "name": "Amazon tracking",
-      "description": "Affiliate tags, referral and session params across Amazon marketplaces. ccTLDs enumerated (no PSL). th/psc deliberately KEPT: they select the displayed product variant — stripping them changes what the recipient sees.",
+      "description": "Affiliate tags, referral and session params across Amazon marketplaces. ccTLDs enumerated (no PSL). th/psc deliberately KEPT: they select the displayed product variant — stripping them changes what the recipient sees. smid deliberately KEPT: it selects the seller whose offer is shown (AdguardFilters #148958).",
       "matcher": {
         "type": "host",
         "suffix": [
@@ -285,7 +311,6 @@
               "creative",
               "creativeASIN",
               "ascsubtag",
-              "smid",
               "spLa",
               "sp_csd"
             ]

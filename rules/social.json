@@ -70,5 +70,16 @@
     ],
     "source": "builtIn",
     "category": "social"
+  },
+  {
+    "id": "social.nytimes",
+    "name": "New York Times share tracking",
+    "description": "Share-attribution params on links shared from NYT (e.g. ?smid=nytcore-ios-share&referringSource=articleShare&sgrp=c-cb). All four are stripped on nytimes.com by AdGuard's URL Tracking filter (AdguardFilters #180304); ClearURLs strips smid. Gift links keep unlocked_article_code, which unlocks the article.",
+    "matcher": { "type": "host", "suffix": ["nytimes.com"] },
+    "actions": [
+      { "type": "removeParameters", "select": { "names": ["smid", "referringSource", "sgrp", "impression_id"] } }
+    ],
+    "source": "builtIn",
+    "category": "social"
   }
 ]
