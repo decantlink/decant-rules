@@ -27,15 +27,13 @@ jobs:
           -d dist/rules.bundle.json
 
       - name: Authoring files stay consistent with dist bundle
-        run: |
-          jq -s 'add' rules/global.json rules/social.json rules/shopping.json | jq -S . > /tmp/authored.json
-          jq -S '.rules' dist/rules.bundle.json > /tmp/dist.json
-          diff -u /tmp/authored.json /tmp/dist.json
+        run: tools/build-bundle.sh --check
 
-      # The prefix is the fixed DER header that wraps a raw 32-byte Ed25519 public key.
+      # Verify only: signing stays local so the key never reaches GitHub. The prefix is the fixed
+      # DER header that wraps a raw 32-byte Ed25519 public key.
       - name: Signature verifies over the exact dist bytes
         run: |
-          { printf '\x30\x2a\x30\x05\x06\x03\x2b\x65\x70\x03\x21\x00'; cat keys/dev_public.key; } > /tmp/public.der
+          { printf '\x30\x2a\x30\x05\x06\x03\x2b\x65\x70\x03\x21\x00'; cat keys/managed_public.key; } > /tmp/public.der
           openssl pkeyutl -verify -pubin -keyform DER -inkey /tmp/public.der -rawin \
             -in dist/rules.bundle.json -sigfile dist/rules.bundle.json.sig
 
@@ -65,6 +63,3 @@ jobs:
       - name: Fixtures pass against the real engine
         working-directory: core
         run: swift test --filter 'SemanticSafetyTests|URLFidelityTests'
-
-  # TODO(release): CI signing with a managed key replaces the locally signed, committed
-  # dev-key signature at the release gate.

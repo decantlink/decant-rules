@@ -23,7 +23,8 @@ tools/sign-bundle.swift     local signer; the maintainer runs it, never an agent
 
 - Add/edit a rule: edit `rules/<category>.json` per `SCHEMA.md`; validate against `schema/rule.schema.json`.
 - Rebuild dist: `tools/build-bundle.sh --bump`; check it: `tools/build-bundle.sh --check`.
-- CI (`validate`): generation +1, schema, rules-vs-dist consistency, signature. CI (`fixtures`): the
+- CI (`validate`): generation +1, schema, rules-vs-dist consistency, signature against
+  `keys/managed_public.key` (`keys/dev_public.key` signs nothing current). CI (`fixtures`): the
   fixture suites of `decant-core` at `CORE_REF` (the engine version the app resolves) against this bundle.
 
 ## Publishing

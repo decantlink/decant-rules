@@ -43,7 +43,8 @@ for about 5 minutes, so devices see a merge within minutes of their next check.
 
 1. Open a PR with the `rules/*.json` change and any fixture updates.
 2. Rebuild the bundle: `tools/build-bundle.sh --bump` (generation + 1, `generatedAt` = now).
-3. The maintainer signs the bundle locally (`swift tools/sign-bundle.swift`) and commits the `.sig`.
+3. The maintainer signs in their own terminal with `swift tools/sign-bundle.swift`, entering the
+   managed key at the hidden prompt (or piping it in), and commits the `.sig`.
 4. CI checks the schema, rules-vs-bundle consistency, the signature, the +1 generation rule,
    and runs the fixtures against the real engine.
 5. Merge = publish. If `main` gained a publish meanwhile, take its `dist/`, bump and sign again.
