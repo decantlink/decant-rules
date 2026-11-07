@@ -98,10 +98,10 @@
     {
       "name": "instagram-keyword-search-kept",
       "input": "https://www.instagram.com/explore/search/keyword/?q=coffee&bfcy=OHFrdmxzOWJnZm0zZg==",
-      "expected": "https://www.instagram.com/explore/search/keyword/?q=coffee&bfcy=OHFrdmxzOWJnZm0zZg==",
-      "removed": [],
-      "modified": false,
-      "note": "Not a share path, so the allowlist does not apply and the token-shaped bfcy survives. Accepted under-removal: scoping the allowlist protects functional params on every other path."
+      "expected": "https://www.instagram.com/explore/search/keyword/?q=coffee",
+      "removed": ["bfcy"],
+      "modified": true,
+      "note": "Not a share path, so social.instagram-site's allowlist applies: the search term stays, the token goes."
     },
     {
       "name": "instagram-reels-share-token-stripped",
@@ -119,19 +119,19 @@
     },
     {
       "name": "instagram-share-prefix-is-segment-bounded",
-      "input": "https://www.instagram.com/reelsx/?kqzt=c3ludGhldGljLXRva2Vu",
-      "expected": "https://www.instagram.com/reelsx/?kqzt=c3ludGhldGljLXRva2Vu",
+      "input": "https://www.instagram.com/reelsx/?client_id=990000000000001",
+      "expected": "https://www.instagram.com/reelsx/?client_id=990000000000001",
       "removed": [],
       "modified": false,
-      "note": "A profile whose username starts with a share prefix is not a share path: /reels matches /reels and /reels/..., never /reelsx."
+      "note": "A profile whose username starts with a share prefix is not a share path: /reels matches /reels and /reels/..., never /reelsx. client_id is kept by the site list but not by the share list, so it survives only if /reelsx misses the share rule."
     },
     {
       "name": "instagram-password-reset-params-kept",
-      "input": "https://www.instagram.com/accounts/password/reset/confirm/?uidb36=synth1&token=synthetic-reset-token",
-      "expected": "https://www.instagram.com/accounts/password/reset/confirm/?uidb36=synth1&token=synthetic-reset-token",
+      "input": "https://instagram.com/accounts/password/reset/confirm/?uidb36=synth1&token=synthetic-reset-token&s=synthetic_email_type&is_caa=0&afv=synthetic",
+      "expected": "https://instagram.com/accounts/password/reset/confirm/?uidb36=synth1&token=synthetic-reset-token&s=synthetic_email_type&is_caa=0&afv=synthetic",
       "removed": [],
       "modified": false,
-      "note": "Functional params off share paths must survive byte-identical; a site-wide allowlist would break reset links."
+      "note": "Param names and order from a real reset email (values synthetic). Account recovery must survive byte-identical; social.instagram-site's allowlist keeps all five."
     },
     {
       "name": "instagram-share-id-removed-off-share-path",
@@ -269,6 +269,64 @@
       "expected": "https://www.example.org/page?smid=keep-me",
       "removed": [],
       "modified": false
+    },
+    {
+      "name": "instagram-profile-dlrf-token-stripped",
+      "input": "https://www.instagram.com/someuser?dlrf=c3ludGhldGljLXRva2Vu",
+      "expected": "https://www.instagram.com/someuser",
+      "removed": ["dlrf"],
+      "modified": true
+    },
+    {
+      "name": "instagram-profile-obrf-token-stripped-bare-host",
+      "input": "https://instagram.com/someuser/?obrf=c3ludGhldGljLXRva2Vu&igsh=MTIzYWJj",
+      "expected": "https://instagram.com/someuser/",
+      "removed": ["obrf", "igsh"],
+      "modified": true
+    },
+    {
+      "name": "instagram-profile-language-kept",
+      "input": "https://www.instagram.com/someuser/?hl=pt&dlrf=c3ludGhldGljLXRva2Vu",
+      "expected": "https://www.instagram.com/someuser/?hl=pt",
+      "removed": ["dlrf"],
+      "modified": true
+    },
+    {
+      "name": "instagram-login-redirect-kept-token-stripped",
+      "input": "https://www.instagram.com/accounts/login/?next=%2Fsomeuser%2F&qwer=c3ludGhldGljLXRva2Vu",
+      "expected": "https://www.instagram.com/accounts/login/?next=%2Fsomeuser%2F",
+      "removed": ["qwer"],
+      "modified": true
+    },
+    {
+      "name": "instagram-explore-tag-token-stripped",
+      "input": "https://www.instagram.com/explore/tags/synthetic/?abcd=c3ludGhldGljLXRva2Vu",
+      "expected": "https://www.instagram.com/explore/tags/synthetic/",
+      "removed": ["abcd"],
+      "modified": true
+    },
+    {
+      "name": "instagram-story-share-params-stripped",
+      "input": "https://www.instagram.com/stories/someuser/3000000000000000001/?utm_source=ig_story_item_share&igsh=MTIzYWJj&efgh=c3ludGhldGljLXRva2Vu",
+      "expected": "https://www.instagram.com/stories/someuser/3000000000000000001/",
+      "removed": ["utm_source", "igsh", "efgh"],
+      "modified": true
+    },
+    {
+      "name": "instagram-oauth-authorize-params-kept",
+      "input": "https://www.instagram.com/oauth/authorize?client_id=990000000000001&redirect_uri=https%3A%2F%2Fexample.com%2Fauth%2F&response_type=code&scope=instagram_business_basic&state=synthetic&enable_fb_login=0&force_reauth=true",
+      "expected": "https://www.instagram.com/oauth/authorize?client_id=990000000000001&redirect_uri=https%3A%2F%2Fexample.com%2Fauth%2F&response_type=code&scope=instagram_business_basic&state=synthetic&enable_fb_login=0&force_reauth=true",
+      "removed": [],
+      "modified": false,
+      "note": "Meta's Business Login for Instagram authorize URL; every documented param is functional."
+    },
+    {
+      "name": "instagram-share-path-list-wins-over-site-list",
+      "input": "https://www.instagram.com/p/SynthPost01/?img_index=2&client_id=990000000000001",
+      "expected": "https://www.instagram.com/p/SynthPost01/?img_index=2",
+      "removed": ["client_id"],
+      "modified": true,
+      "note": "Both keepOnly rules match a share path; social.instagram-web (priority 100) must win over social.instagram-site (200), so client_id, kept only by the site list, is stripped."
     }
   ]
 }
