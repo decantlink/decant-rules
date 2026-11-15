@@ -102,5 +102,16 @@
     ],
     "source": "builtIn",
     "category": "social"
+  },
+  {
+    "id": "social.guardian",
+    "name": "Guardian share tracking",
+    "description": "Share campaign attribution, including CMP=Share_iOSApp_Other. Guardian's ShareLinks.scala constructs CMP campaign codes separately from the functional page block selector: https://github.com/guardian/frontend/blob/251f9bd473c8f586672ffcc901d35eb34c0aa414/common/app/model/ShareLinks.scala. Exact article hosts only.",
+    "matcher": { "type": "host", "exact": ["theguardian.com", "www.theguardian.com"] },
+    "actions": [
+      { "type": "removeParameters", "select": { "names": ["CMP"] } }
+    ],
+    "source": "builtIn",
+    "category": "social"
   }
 ]
