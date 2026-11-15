@@ -141,6 +141,34 @@
       "removed": ["si"],
       "modified": true,
       "note": "keepOnly must not report the empty token as a removed parameter."
+    },
+    {
+      "name": "guardian-app-share-cmp-only",
+      "input": "https://www.theguardian.com/technology/2026/nov/15/synthetic-article?CMP=Share_iOSApp_Other",
+      "expected": "https://www.theguardian.com/technology/2026/nov/15/synthetic-article",
+      "removed": ["CMP"],
+      "modified": true
+    },
+    {
+      "name": "guardian-percent-encoded-cmp-keeps-query-bytes",
+      "input": "https://www.theguardian.com/technology/2026/nov/15/synthetic-article?q=a+b%2fc&%43MP=Share_iOSApp_Other&empty=#section?keep=1",
+      "expected": "https://www.theguardian.com/technology/2026/nov/15/synthetic-article?q=a+b%2fc&empty=#section?keep=1",
+      "removed": ["%43MP"],
+      "modified": true
+    },
+    {
+      "name": "guardian-repeated-cmp-keeps-block-selector",
+      "input": "https://www.theguardian.com/technology/2026/nov/15/synthetic-article?CMP=Share_iOSApp_Other&page=with%3Asynthetic-block&CMP=share_btn_url&empty=&CMP#synthetic-block",
+      "expected": "https://www.theguardian.com/technology/2026/nov/15/synthetic-article?page=with%3Asynthetic-block&empty=#synthetic-block",
+      "removed": ["CMP", "CMP", "CMP"],
+      "modified": true
+    },
+    {
+      "name": "guardian-bare-host-cmp-removed",
+      "input": "https://theguardian.com/technology/2026/nov/15/synthetic-article?CMP=Share_iOSApp_Other",
+      "expected": "https://theguardian.com/technology/2026/nov/15/synthetic-article",
+      "removed": ["CMP"],
+      "modified": true
     }
   ]
 }
