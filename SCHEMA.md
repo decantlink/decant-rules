@@ -178,6 +178,11 @@ not catastrophic. The catastrophic blast radius (redirect → phishing) only app
 actions. Signing ships now anyway because it is cheap and establishes the single verify path
 before routing exists.
 
+### 5.4 Breaking delivery changes
+A breaking delivery schema publishes at a new versioned URL. Existing versioned feeds remain
+compatible with clients that already fetch them. Unknown additive matcher or action types are
+skipped by readers; they never change the meaning of a known type.
+
 ---
 
 ## 6. Rule object
@@ -219,6 +224,13 @@ on the portion that is kept** — only the removed parameters (and their separat
 - This is the **highest bug-density component**; it has a dedicated fixture corpus
   (`fixtures/url-fidelity.json`) covering: leading param (no `&`), `;` separators, `+`/space,
   fragments containing `?`, empty values, repeated names, percent-encoded names.
+
+### 7.1 Engine conformance
+The engine conformance fixtures in this repository are the acceptance suite for every supported
+engine. Run the candidate bundle and fixtures together against versions supported by shipping
+clients before publishing a changed bundle. Cleaning fixtures assert the exact UTF-8 output
+bytes, ordered wire spelling of removed names and modification flag. Loader fixtures assert
+verification, generation decisions and forward-compatible rule handling.
 
 ---
 
