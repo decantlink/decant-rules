@@ -43,7 +43,7 @@ jobs:
     runs-on: macos-latest
     env:
       # Tracks the decant-core version the Decant app currently resolves; bump it when the app does.
-      CORE_REF: 0.2.0
+      CORE_REF: 0.3.0
     steps:
       - uses: actions/checkout@v4
         with:
