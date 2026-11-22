@@ -34,6 +34,10 @@ edit `rules/` + fixtures → `tools/build-bundle.sh --bump` → the maintainer s
 merge. Every change to `dist/` is exactly +1 generation; fixes roll forward, never back. Agents
 prepare everything except signing, and never read, generate or print a private key.
 
+Before opening a rules PR, run `tools/check-core-ref.sh`. If it warns that `CORE_REF` is behind the
+latest `decant-core` tag, say so in the PR description and tell the maintainer; do not bump
+`CORE_REF` unasked. CI runs the same check as a warning.
+
 ## Conventions
 
 - **Three formats, one contract:** authoring (`rules/*.json`) → delivery (signed bundle) → runtime (compiled, in `decant-core` only). Keep them distinct.

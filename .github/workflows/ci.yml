@@ -29,6 +29,9 @@ jobs:
       - name: Authoring files stay consistent with dist bundle
         run: tools/build-bundle.sh --check
 
+      - name: CORE_REF is not behind the latest decant-core tag (warning only)
+        run: tools/check-core-ref.sh
+
       # Verify only: signing stays local so the key never reaches GitHub. The prefix is the fixed
       # DER header that wraps a raw 32-byte Ed25519 public key.
       - name: Signature verifies over the exact dist bytes
@@ -43,7 +46,7 @@ jobs:
     runs-on: macos-latest
     env:
       # Tracks the decant-core version the Decant app currently resolves; bump it when the app does.
-      CORE_REF: 0.2.0
+      CORE_REF: 0.3.0
     steps:
       - uses: actions/checkout@v4
         with:
