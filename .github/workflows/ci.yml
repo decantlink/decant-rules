@@ -29,6 +29,9 @@ jobs:
       - name: Authoring files stay consistent with dist bundle
         run: tools/build-bundle.sh --check
 
+      - name: CORE_REF is not behind the latest decant-core tag (warning only)
+        run: tools/check-core-ref.sh
+
       # Verify only: signing stays local so the key never reaches GitHub. The prefix is the fixed
       # DER header that wraps a raw 32-byte Ed25519 public key.
       - name: Signature verifies over the exact dist bytes
